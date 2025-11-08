@@ -51,6 +51,23 @@ type config struct {
 	UsePublicIP    bool         `envconfig:"USE_PUBLIC_IP" default:"false"`
 	AllowedUsers   allowedUsers `envconfig:"ALLOWED_USERS"`
 	MultiTokens    []string
+
+	// 上传功能配置
+	EnableUploadAPI     bool     `envconfig:"ENABLE_UPLOAD_API" default:"false"`
+	UploadAuthToken     string   `envconfig:"UPLOAD_AUTH_TOKEN"`
+	MaxFileSize        int64    `envconfig:"MAX_FILE_SIZE" default:"2147483648"` // 2GB
+	UserQuota          int64    `envconfig:"USER_QUOTA" default:"10737418240"`  // 10GB per user
+	AllowedMimeTypes   string   `envconfig:"ALLOWED_MIME_TYPES" default:"image/jpeg,image/png,image/gif,video/mp4,video/avi,application/pdf,text/plain,application/zip"`
+	AllowedExtensions  string   `envconfig:"ALLOWED_EXTENSIONS" default:".jpg,.jpeg,.png,.gif,.mp4,.avi,.pdf,.txt,.zip"`
+	UploadsPerMinute   int      `envconfig:"UPLOADS_PER_MINUTE" default:"5"`
+	UploadsPerHour     int      `envconfig:"UPLOADS_PER_HOUR" default:"50"`
+	ConcurrentUploads   int      `envconfig:"CONCURRENT_UPLOADS_PER_USER" default:"3"`
+	APICooldownSeconds int      `envconfig:"API_COOLDOWN_SECONDS" default:"1"`
+	EnableProtection   bool     `envconfig:"ENABLE_PROTECTION_MODE" default:"true"`
+	EnableDeepScan     bool     `envconfig:"ENABLE_DEEP_SCAN" default:"false"`
+	
+	// 代理配置
+	TelegramProxy      string   `envconfig:"TELEGRAM_PROXY" default:""` // socks5://127.0.0.1:1080
 }
 
 var botTokenRegex = regexp.MustCompile(`MULTI\_TOKEN\d+=(.*)`)
@@ -84,6 +101,20 @@ func SetFlagsFromConfig(cmd *cobra.Command) {
 	cmd.Flags().String("user-session", ValueOf.UserSession, "Pyrogram user session")
 	cmd.Flags().Bool("use-public-ip", ValueOf.UsePublicIP, "Use public IP instead of local IP")
 	cmd.Flags().String("multi-token-txt-file", "", "Multi token txt file (Not implemented)")
+
+	// 上传API相关命令行参数
+	cmd.Flags().Bool("enable-upload-api", ValueOf.EnableUploadAPI, "Enable upload API")
+	cmd.Flags().String("upload-auth-token", ValueOf.UploadAuthToken, "Upload API authentication token")
+	cmd.Flags().Int64("max-file-size", ValueOf.MaxFileSize, "Maximum file size for upload (bytes)")
+	cmd.Flags().Int64("user-quota", ValueOf.UserQuota, "User storage quota (bytes)")
+	cmd.Flags().String("allowed-mime-types", ValueOf.AllowedMimeTypes, "Allowed MIME types for upload")
+	cmd.Flags().String("allowed-extensions", ValueOf.AllowedExtensions, "Allowed file extensions for upload")
+	cmd.Flags().Int("uploads-per-minute", ValueOf.UploadsPerMinute, "Uploads allowed per minute per user")
+	cmd.Flags().Int("uploads-per-hour", ValueOf.UploadsPerHour, "Uploads allowed per hour per user")
+	cmd.Flags().Int("concurrent-uploads", ValueOf.ConcurrentUploads, "Concurrent uploads per user")
+	cmd.Flags().Int("api-cooldown-seconds", ValueOf.APICooldownSeconds, "API cooldown seconds")
+	cmd.Flags().Bool("enable-protection", ValueOf.EnableProtection, "Enable protection mode")
+	cmd.Flags().Bool("enable-deep-scan", ValueOf.EnableDeepScan, "Enable deep file scanning")
 }
 
 func (c *config) loadConfigFromArgs(log *zap.Logger, cmd *cobra.Command) {
@@ -135,6 +166,56 @@ func (c *config) loadConfigFromArgs(log *zap.Logger, cmd *cobra.Command) {
 	if multiTokens != "" {
 		os.Setenv("MULTI_TOKEN_TXT_FILE", multiTokens)
 		// TODO: Add support for importing tokens from a separate file
+	}
+
+	// 上传API配置处理
+	enableUploadAPI, _ := cmd.Flags().GetBool("enable-upload-api")
+	if enableUploadAPI {
+		os.Setenv("ENABLE_UPLOAD_API", strconv.FormatBool(enableUploadAPI))
+	}
+	uploadAuthToken, _ := cmd.Flags().GetString("upload-auth-token")
+	if uploadAuthToken != "" {
+		os.Setenv("UPLOAD_AUTH_TOKEN", uploadAuthToken)
+	}
+	maxFileSize, _ := cmd.Flags().GetInt64("max-file-size")
+	if maxFileSize != 0 {
+		os.Setenv("MAX_FILE_SIZE", strconv.FormatInt(maxFileSize, 10))
+	}
+	userQuota, _ := cmd.Flags().GetInt64("user-quota")
+	if userQuota != 0 {
+		os.Setenv("USER_QUOTA", strconv.FormatInt(userQuota, 10))
+	}
+	allowedMimeTypes, _ := cmd.Flags().GetString("allowed-mime-types")
+	if allowedMimeTypes != "" {
+		os.Setenv("ALLOWED_MIME_TYPES", allowedMimeTypes)
+	}
+	allowedExtensions, _ := cmd.Flags().GetString("allowed-extensions")
+	if allowedExtensions != "" {
+		os.Setenv("ALLOWED_EXTENSIONS", allowedExtensions)
+	}
+	uploadsPerMinute, _ := cmd.Flags().GetInt("uploads-per-minute")
+	if uploadsPerMinute != 0 {
+		os.Setenv("UPLOADS_PER_MINUTE", strconv.Itoa(uploadsPerMinute))
+	}
+	uploadsPerHour, _ := cmd.Flags().GetInt("uploads-per-hour")
+	if uploadsPerHour != 0 {
+		os.Setenv("UPLOADS_PER_HOUR", strconv.Itoa(uploadsPerHour))
+	}
+	concurrentUploads, _ := cmd.Flags().GetInt("concurrent-uploads")
+	if concurrentUploads != 0 {
+		os.Setenv("CONCURRENT_UPLOADS_PER_USER", strconv.Itoa(concurrentUploads))
+	}
+	apiCooldownSeconds, _ := cmd.Flags().GetInt("api-cooldown-seconds")
+	if apiCooldownSeconds != 0 {
+		os.Setenv("API_COOLDOWN_SECONDS", strconv.Itoa(apiCooldownSeconds))
+	}
+	enableProtection, _ := cmd.Flags().GetBool("enable-protection")
+	if enableProtection {
+		os.Setenv("ENABLE_PROTECTION_MODE", strconv.FormatBool(enableProtection))
+	}
+	enableDeepScan, _ := cmd.Flags().GetBool("enable-deep-scan")
+	if enableDeepScan {
+		os.Setenv("ENABLE_DEEP_SCAN", strconv.FormatBool(enableDeepScan))
 	}
 }
 

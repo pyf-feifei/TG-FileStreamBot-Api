@@ -41,6 +41,135 @@ var Workers *BotWorkers = &BotWorkers{
 	Bots: make([]*Worker, 0),
 }
 
+// 上传专用worker管理器
+type UploadWorkerManager struct {
+	workers       []*Worker
+	lastUse       map[int]time.Time // workerID -> 最后使用时间
+	mutex         sync.Mutex
+	cooldown      time.Duration       // API调用冷却时间
+	logger        *zap.Logger
+	currentIndex  int
+}
+
+var uploadManager *UploadWorkerManager
+
+// 初始化上传worker管理器
+func InitUploadWorkerManager(log *zap.Logger, cooldownSeconds int) {
+	uploadManager = &UploadWorkerManager{
+		workers:   Workers.Bots,
+		lastUse:   make(map[int]time.Time),
+		mutex:     sync.Mutex{},
+		cooldown:   time.Duration(cooldownSeconds) * time.Second,
+		logger:    log.Named("UploadWorkerManager"),
+	}
+}
+
+// 获取下一个可用的上传worker
+func GetNextUploadWorker() *Worker {
+	if uploadManager == nil {
+		return GetNextWorker() // 回退到普通选择
+	}
+
+	uploadManager.mutex.Lock()
+	defer uploadManager.mutex.Unlock()
+
+	now := time.Now()
+
+	// 查找不在冷却期的worker
+	for i := 0; i < len(uploadManager.workers); i++ {
+		workerIndex := (uploadManager.currentIndex + i) % len(uploadManager.workers)
+		worker := uploadManager.workers[workerIndex]
+
+		// 检查worker是否可用
+		if lastUse, exists := uploadManager.lastUse[worker.ID]; !exists ||
+			now.Sub(lastUse) > uploadManager.cooldown {
+			uploadManager.currentIndex = workerIndex
+			uploadManager.lastUse[worker.ID] = now
+			uploadManager.logger.Debug("选择上传worker",
+				zap.Int("workerID", worker.ID),
+				zap.String("username", worker.Self.Username),
+				zap.Duration("cooldownWait", now.Sub(lastUse)))
+			return worker
+		}
+	}
+
+	// 所有worker都在冷却，选择等待时间最短的
+	shortestWait := time.Hour
+	var selectedWorker *Worker
+
+	for _, worker := range uploadManager.workers {
+		if lastUse, exists := uploadManager.lastUse[worker.ID]; exists {
+			waitTime := uploadManager.cooldown - now.Sub(lastUse)
+			if waitTime < shortestWait {
+				shortestWait = waitTime
+				selectedWorker = worker
+			}
+		} else {
+			shortestWait = 0
+			selectedWorker = worker
+			break
+		}
+	}
+
+	if selectedWorker != nil {
+		uploadManager.currentIndex = (uploadManager.currentIndex + 1) % len(uploadManager.workers)
+		uploadManager.lastUse[selectedWorker.ID] = now
+
+		if shortestWait > 0 {
+			uploadManager.logger.Warn("所有worker都在冷却期，选择等待时间最短的",
+				zap.Int("workerID", selectedWorker.ID),
+				zap.String("username", selectedWorker.Self.Username),
+				zap.Duration("waitTime", shortestWait))
+		} else {
+			uploadManager.logger.Debug("选择可用上传worker",
+				zap.Int("workerID", selectedWorker.ID),
+				zap.String("username", selectedWorker.Self.Username))
+		}
+
+		return selectedWorker
+	}
+
+	return GetNextWorker() // 如果没有worker可用，回退到普通选择
+}
+
+// 获取worker统计信息
+func GetUploadWorkerStats() map[string]interface{} {
+	if uploadManager == nil {
+		return map[string]interface{}{
+			"totalWorkers": len(Workers.Bots),
+			"availableWorkers": len(Workers.Bots),
+			"uploadManagerEnabled": false,
+		}
+	}
+
+	uploadManager.mutex.Lock()
+	defer uploadManager.mutex.Unlock()
+
+	now := time.Now()
+	availableCount := 0
+	cooldownCount := 0
+
+	for _, worker := range uploadManager.workers {
+		if lastUse, exists := uploadManager.lastUse[worker.ID]; exists {
+			if now.Sub(lastUse) > uploadManager.cooldown {
+				availableCount++
+			} else {
+				cooldownCount++
+			}
+		} else {
+			availableCount++
+		}
+	}
+
+	return map[string]interface{}{
+		"totalWorkers":      len(uploadManager.workers),
+		"availableWorkers":   availableCount,
+		"cooldownWorkers":    cooldownCount,
+		"cooldownDuration":   uploadManager.cooldown.Seconds(),
+		"uploadManagerEnabled": true,
+	}
+}
+
 func (w *BotWorkers) Init(log *zap.Logger) {
 	w.log = log.Named("Workers")
 }

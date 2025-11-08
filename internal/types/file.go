@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"reflect"
 	"strconv"
+	"time"
 
 	"github.com/gotd/td/tg"
 )
@@ -22,6 +23,36 @@ type HashableFileStruct struct {
 	FileSize int64
 	MimeType string
 	FileID   int64
+}
+
+// 上传结果
+type UploadResult struct {
+	Filename    string    `json:"filename"`
+	Size        int64     `json:"size"`
+	MimeType    string    `json:"mimeType"`
+	MessageID   int       `json:"messageId"`
+	StreamURL   string    `json:"streamUrl"`
+	DownloadURL string    `json:"downloadUrl"`
+	Hash        string    `json:"hash"`
+	UploadTime  time.Time `json:"uploadTime"`
+}
+
+// 用户配额信息
+type UserQuotaInfo struct {
+	UserID      string  `json:"userId"`
+	UsedQuota   int64   `json:"usedQuota"`
+	MaxQuota    int64   `json:"maxQuota"`
+	QuotaPercent float64 `json:"quotaPercent"`
+	Remaining    int64   `json:"remaining"`
+}
+
+// 上传状态响应
+type UploadStatusResponse struct {
+	Success     bool                   `json:"success"`
+	Message     string                 `json:"message"`
+	TotalFiles  int                    `json:"totalFiles"`
+	Results     map[string]interface{}    `json:"results"`
+	Timestamp   int64                  `json:"timestamp"`
 }
 
 func (f *HashableFileStruct) Pack() string {
