@@ -56,7 +56,7 @@ type config struct {
 	EnableUploadAPI     bool     `envconfig:"ENABLE_UPLOAD_API" default:"false"`
 	UploadAuthToken     string   `envconfig:"UPLOAD_AUTH_TOKEN"`
 	MaxFileSize        int64    `envconfig:"MAX_FILE_SIZE" default:"2147483648"` // 2GB
-	UserQuota          int64    `envconfig:"USER_QUOTA" default:"10737418240"`  // 10GB per user
+	UserQuota          int64    `envconfig:"USER_QUOTA" default:"0"`  // 0 = 不限制配额
 	AllowedMimeTypes   string   `envconfig:"ALLOWED_MIME_TYPES" default:"image/jpeg,image/png,image/gif,video/mp4,video/avi,application/pdf,text/plain,application/zip"`
 	AllowedExtensions  string   `envconfig:"ALLOWED_EXTENSIONS" default:".jpg,.jpeg,.png,.gif,.mp4,.avi,.pdf,.txt,.zip"`
 	UploadsPerMinute   int      `envconfig:"UPLOADS_PER_MINUTE" default:"5"`

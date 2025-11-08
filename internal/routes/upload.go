@@ -339,6 +339,18 @@ func handleUploadStatus(ctx *gin.Context) {
 		return
 	}
 
+	// 检查是否启用配额限制
+	if config.ValueOf.UserQuota <= 0 {
+		// 无配额限制
+		ctx.JSON(http.StatusOK, gin.H{
+			"userID":        userID,
+			"quotaEnabled":  false,
+			"message":       "无配额限制",
+			"unlimited":     true,
+		})
+		return
+	}
+
 	// 获取用户配额使用情况
 	usedQuota, err := utils.GetUserStorageUsage(parseUserID(userID), config.ValueOf.LogChannelID, nil)
 	if err != nil {
@@ -349,11 +361,12 @@ func handleUploadStatus(ctx *gin.Context) {
 	quotaPercent := float64(usedQuota) / float64(config.ValueOf.UserQuota) * 100
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"userID": userID,
-		"usedQuota": usedQuota,
-		"maxQuota": config.ValueOf.UserQuota,
+		"userID":       userID,
+		"quotaEnabled": true,
+		"usedQuota":    usedQuota,
+		"maxQuota":     config.ValueOf.UserQuota,
 		"quotaPercent": quotaPercent,
-		"remaining": config.ValueOf.UserQuota - usedQuota,
+		"remaining":    config.ValueOf.UserQuota - usedQuota,
 	})
 }
 

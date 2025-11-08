@@ -241,6 +241,11 @@ func NewQuotaManager(maxQuota int64, logger *zap.Logger) *QuotaManager {
 
 // 检查用户配额
 func (qm *QuotaManager) CheckQuota(userID int64, fileSize int64) (bool, error) {
+	// 如果 maxQuota <= 0，表示不限制配额，直接通过
+	if qm.maxQuota <= 0 {
+		return true, nil
+	}
+
 	qm.mutex.Lock()
 	defer qm.mutex.Unlock()
 
@@ -255,6 +260,11 @@ func (qm *QuotaManager) CheckQuota(userID int64, fileSize int64) (bool, error) {
 
 // 更新用户配额使用量
 func (qm *QuotaManager) UpdateUsage(userID int64, fileSize int64) {
+	// 如果不限制配额，无需记录使用量
+	if qm.maxQuota <= 0 {
+		return
+	}
+
 	qm.mutex.Lock()
 	defer qm.mutex.Unlock()
 
