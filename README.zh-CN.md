@@ -1,14 +1,17 @@
+<div align="center">
+
 # TG-FileStreamBot-Api
 
-<p align="center">
-    <a herf="https://github.com/EverythingSuckz/TG-FileStreamBot-Api">
-        <img src="https://telegra.ph/file/a8bb3f6b334ad1200ddb4.png" height="100" width="100" alt="File Stream Bot Logo">
-    </a>
-</p>
+<a herf="https://github.com/EverythingSuckz/TG-FileStreamBot-Api">
+    <img src="https://telegra.ph/file/a8bb3f6b334ad1200ddb4.png" height="100" width="100" alt="File Stream Bot Logo">
+</a>
 
-<p align="center">
-    一个为您的 Telegram 文件<b>生成直链</b>的 Telegram 机器人，支持 <b>HTTP 上传 API</b>。
-</p>
+### 一个为您的 Telegram 文件**生成直链**的 Telegram 机器人，支持 **HTTP 上传 API**。
+
+[![English](https://img.shields.io/badge/Language-English-blue?style=for-the-badge)](README.md)
+[![中文](https://img.shields.io/badge/语言-简体中文-red?style=for-the-badge)](README.zh-CN.md)
+
+</div>
 
 <hr>
 

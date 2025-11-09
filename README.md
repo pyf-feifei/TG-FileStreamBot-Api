@@ -1,16 +1,17 @@
-<h1 align="center">TG-FileStreamBot-Api</h1>
-<p align="center">
-  </a>
-  <p align="center">
-    <a herf="https://github.com/EverythingSuckz/TG-FileStreamBot-Api">
-        <img src="https://telegra.ph/file/a8bb3f6b334ad1200ddb4.png" height="100" width="100" alt="File Stream Bot Logo">
-    </a>
-</p>
-  <p align="center">
-    A Telegram bot to <b>generate direct link</b> for your Telegram files with <b>HTTP Upload API</b> support.
-    <br />
-  </p>
-</p>
+<div align="center">
+
+# TG-FileStreamBot-Api
+
+<a herf="https://github.com/EverythingSuckz/TG-FileStreamBot-Api">
+    <img src="https://telegra.ph/file/a8bb3f6b334ad1200ddb4.png" height="100" width="100" alt="File Stream Bot Logo">
+</a>
+
+### A Telegram bot to **generate direct link** for your Telegram files with **HTTP Upload API** support
+
+[![English](https://img.shields.io/badge/Language-English-blue?style=for-the-badge)](README.md)
+[![中文](https://img.shields.io/badge/语言-简体中文-red?style=for-the-badge)](README.zh-CN.md)
+
+</div>
 
 <hr>
 
