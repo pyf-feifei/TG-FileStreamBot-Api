@@ -1,6 +1,6 @@
 {
-    "name": "TG FileStreamBot",
-    "description": "Stream Telegram files to web",
+    "name": "TG-FileStreamBot-Api",
+    "description": "Stream Telegram files to web with HTTP Upload API support",
     "keywords": [
         "telegram",
         "web",
@@ -8,9 +8,10 @@
         "golang",
         "file-streaming",
         "file-to-link",
-        "TG-FileStreamBot"
+        "upload-api",
+        "TG-FileStreamBot-Api"
     ],
-    "repository": "https://github.com/EverythingSuckz/TG-FileStreamBot",
+    "repository": "https://github.com/EverythingSuckz/TG-FileStreamBot-Api",
     "logo": "https://telegra.ph/file/a8bb3f6b334ad1200ddb4.png",
     "env": {
         "API_ID": {

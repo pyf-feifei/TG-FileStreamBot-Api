@@ -1,13 +1,13 @@
-<h1 align="center">Telegram File Stream Bot</h1>
+<h1 align="center">TG-FileStreamBot-Api</h1>
 <p align="center">
   </a>
   <p align="center">
-    <a herf="https://github.com/EverythingSuckz/TG-FileStreamBot">
+    <a herf="https://github.com/EverythingSuckz/TG-FileStreamBot-Api">
         <img src="https://telegra.ph/file/a8bb3f6b334ad1200ddb4.png" height="100" width="100" alt="File Stream Bot Logo">
     </a>
 </p>
   <p align="center">
-    A Telegram bot to <b>generate direct link</b> for your Telegram files.
+    A Telegram bot to <b>generate direct link</b> for your Telegram files with <b>HTTP Upload API</b> support.
     <br />
   </p>
 </p>
@@ -15,7 +15,7 @@
 <hr>
 
 > [!NOTE]
-> Checkout [python branch](https://github.com/EverythingSuckz/TG-FileStreamBot/tree/python) if you are interested in that.
+> Checkout [python branch](https://github.com/EverythingSuckz/TG-FileStreamBot-Api/tree/python) if you are interested in that.
 
 <hr>
 
@@ -54,13 +54,20 @@
         </li>
       </ul>
     </li>
+    <li>
+      <a href="#http-upload-api">HTTP Upload API</a>
+      <ul>
+        <li><a href="#api-endpoints">API Endpoints</a></li>
+        <li><a href="#api-configuration">API Configuration</a></li>
+        <li><a href="#api-usage-examples">Usage Examples</a></li>
+        <li><a href="#api-security">Security Features</a></li>
+      </ul>
+    </li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#contact-me">Contact me</a></li>
     <li><a href="#credits">Credits</a></li>
   </ol>
 </details>
-
-
 
 ## How to make your own
 
@@ -77,7 +84,7 @@
 ### Deploy to Heroku
 
 > [!NOTE]
-> You'll have to [fork](https://github.com/EverythingSuckz/TG-FileStreamBot/fork) this repository to deploy to Heroku.
+> You'll have to [fork](https://github.com/EverythingSuckz/TG-FileStreamBot-Api/fork) this repository to deploy to Heroku.
 
 Press the below button to fast deploy to Heroku
 
@@ -88,7 +95,8 @@ Press the below button to fast deploy to Heroku
 <hr>
 
 ### Download from releases
-- Head over to [releases](https://github.com/EverythingSuckz/TG-FileStreamBot/releases) tab, from the *pre release* section, download the one for your platform and architecture.
+
+- Head over to [releases](https://github.com/EverythingSuckz/TG-FileStreamBot-Api/releases) tab, from the _pre release_ section, download the one for your platform and architecture.
 - Extract the zip file to a folder.
 - Create an a file named `fsb.env` and add all the variables there (see `fsb.sample.env` file for reference).
 - Give the executable file permission to execute using the command `chmod +x fsb` (Not required for windows).
@@ -99,9 +107,10 @@ Press the below button to fast deploy to Heroku
 ### Run using docker-compose
 
 - Clone the repository
+
 ```sh
-git clone https://github.com/EverythingSuckz/TG-FileStreamBot
-cd TG-FileStreamBot
+git clone https://github.com/EverythingSuckz/TG-FileStreamBot-Api
+cd TG-FileStreamBot-Api
 ```
 
 - Create an a file named `fsb.env` and add all the variables there (see `fsb.sample.env` file for reference).
@@ -115,7 +124,8 @@ nano fsb.env
 ```sh
 docker-compose up -d
 ```
- OR
+
+OR
 
 ```sh
 docker compose up -d
@@ -128,6 +138,7 @@ docker compose up -d
 ```sh
 docker run --env-file fsb.env ghcr.io/everythingsuckz/fsb:latest
 ```
+
 Where `fsb.env` is the environment file containing all the variables.
 
 <hr>
@@ -138,11 +149,11 @@ Where `fsb.env` is the environment file containing all the variables.
 
 > [!NOTE]
 > Make sure to install go 1.21 or above.
-> Refer https://stackoverflow.com/a/17566846/15807350
+> Refer <https://stackoverflow.com/a/17566846/15807350>
 
 ```sh
-git clone https://github.com/EverythingSuckz/TG-FileStreamBot
-cd TG-FileStreamBot
+git clone https://github.com/EverythingSuckz/TG-FileStreamBot-Api
+cd TG-FileStreamBot-Api
 go build ./cmd/fsb/
 chmod +x fsb
 mv fsb.sample.env fsb.env
@@ -152,7 +163,7 @@ nano fsb.env
 ```
 
 and to stop the program,
- do <kbd>CTRL</kbd>+<kbd>C</kbd>
+do <kbd>CTRL</kbd>+<kbd>C</kbd>
 
 #### Windows
 
@@ -160,8 +171,8 @@ and to stop the program,
 > Make sure to install go 1.21 or above.
 
 ```powershell
-git clone https://github.com/EverythingSuckz/TG-FileStreamBot
-cd TG-FileStreamBot
+git clone https://github.com/EverythingSuckz/TG-FileStreamBot-Api
+cd TG-FileStreamBot-Api
 go build ./cmd/fsb/
 Rename-Item -LiteralPath ".\fsb.sample.env" -NewName ".\fsb.env"
 notepad fsb.env
@@ -170,7 +181,7 @@ notepad fsb.env
 ```
 
 and to stop the program,
- do <kbd>CTRL</kbd>+<kbd>C</kbd>
+do <kbd>CTRL</kbd>+<kbd>C</kbd>
 
 ## Setting up things
 
@@ -191,6 +202,7 @@ MULTI_TOKEN2=55838355:yourworkerbottokenhere
 ```
 
 ### Required Vars
+
 Before running the bot, you will need to set up the following mandatory variables:
 
 - `API_ID` : This is the API ID for your Telegram account, which can be obtained from my.telegram.org.
@@ -199,14 +211,15 @@ Before running the bot, you will need to set up the following mandatory variable
 
 - `BOT_TOKEN` : This is the bot token for the Telegram Media Streamer Bot, which can be obtained from [@BotFather](https://telegram.dog/BotFather).
 
-- `LOG_CHANNEL` :  This is the channel ID for the log channel where the bot will forward media messages and store these files to make the generated direct links work. To obtain a channel ID, create a new telegram channel (public or private), post something in the channel, forward the message to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply the forwarded message** with the /id command. Copy the forwarded channel ID and paste it into the this field.
+- `LOG_CHANNEL` : This is the channel ID for the log channel where the bot will forward media messages and store these files to make the generated direct links work. To obtain a channel ID, create a new telegram channel (public or private), post something in the channel, forward the message to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply the forwarded message** with the /id command. Copy the forwarded channel ID and paste it into the this field.
 
 ### Optional Vars
+
 In addition to the mandatory variables, you can also set the following optional variables:
 
 - `PORT` : This sets the port that your webapp will listen to. The default value is 8080.
 
-- `HOST` :  A Fully Qualified Domain Name if present or use your server IP. (eg. `https://example.com` or `http://14.1.154.2:8080`)
+- `HOST` : A Fully Qualified Domain Name if present or use your server IP. (eg. `https://example.com` or `http://14.1.154.2:8080`)
 
 - `HASH_LENGTH` : Custom hash length for generated URLs. The hash length must be greater than 5 and less than or equal to 32. The default value is 6.
 
@@ -220,14 +233,13 @@ In addition to the mandatory variables, you can also set the following optional 
 
 ### Use Multiple Bots to speed up
 
-> [!NOTE]
-> **What it multi-client feature and what it does?** <br>
+> [!NOTE] > **What it multi-client feature and what it does?** <br>
 > This feature shares the Telegram API requests between worker bots to speed up download speed when many users are using the server and to avoid the flood limits that are set by Telegram. <br>
 
 > [!NOTE]
 > You can add up to 50 bots since 50 is the max amount of bot admins you can set in a Telegram Channel.
 
-To enable multi-client, generate new bot tokens and add it as your `fsb.env` with the following key names. 
+To enable multi-client, generate new bot tokens and add it as your `fsb.env` with the following key names.
 
 `MULTI_TOKEN1`: Add your first bot token here.
 
@@ -259,11 +271,273 @@ The easiest way to generate a session string is by running
 ./fsb session --api-id <your api id> --api-hash <your api hash>
 ```
 
-<img src="https://github.com/EverythingSuckz/TG-FileStreamBot/assets/65120517/b5bd2b88-0e1f-4dbc-ad9a-faa6d5a17320" height=300>
+<img src="https://github.com/EverythingSuckz/TG-FileStreamBot-Api/assets/65120517/b5bd2b88-0e1f-4dbc-ad9a-faa6d5a17320" height=300>
 
 <br><br>
 
 This will generate a session string for your user account using QR code authentication. Authentication via phone number is not supported yet and will be added in the future.
+
+## HTTP Upload API
+
+TG-FileStreamBot-Api now supports HTTP file upload functionality, allowing you to upload files via RESTful API and automatically generate streaming download links.
+
+### API Endpoints
+
+#### 1. Single File Upload
+
+```http
+POST /upload
+Content-Type: multipart/form-data
+Authorization: Bearer YOUR_UPLOAD_TOKEN
+```
+
+**Request Parameters:**
+
+- `file`: The file to upload (required)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Upload successful",
+  "data": {
+    "filename": "document.pdf",
+    "size": 1048576,
+    "mimeType": "application/pdf",
+    "messageId": 12345,
+    "streamUrl": "http://your-domain.com/stream/12345?hash=abc123",
+    "downloadUrl": "http://your-domain.com/stream/12345?hash=abc123&d=true",
+    "hash": "abc123",
+    "uploadTime": "2024-01-01T12:00:00Z"
+  }
+}
+```
+
+#### 2. Batch File Upload
+
+```http
+POST /upload/batch
+Content-Type: multipart/form-data
+Authorization: Bearer YOUR_UPLOAD_TOKEN
+```
+
+**Request Parameters:**
+
+- `files`: Multiple files to upload (max 10 files)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Batch upload completed",
+  "summary": {
+    "totalFiles": 3,
+    "successCount": 2,
+    "failedCount": 1,
+    "totalSize": 2097152
+  },
+  "results": [
+    {
+      "filename": "file1.jpg",
+      "success": true,
+      "data": {
+        /* same as single file upload */
+      }
+    },
+    {
+      "filename": "file2.exe",
+      "success": false,
+      "error": "File extension not allowed"
+    }
+  ]
+}
+```
+
+#### 3. Upload Status Query
+
+```http
+GET /upload/status
+Authorization: Bearer YOUR_UPLOAD_TOKEN
+```
+
+**Response:**
+
+```json
+{
+  "userId": "user123",
+  "usedQuota": 104857600,
+  "maxQuota": 10737418240,
+  "quotaPercent": 0.98,
+  "remaining": 18857640
+}
+```
+
+#### 4. Upload Metrics Query
+
+```http
+GET /upload/metrics
+Authorization: Bearer YOUR_UPLOAD_TOKEN
+```
+
+**Response:**
+
+```json
+{
+  "metrics": {
+    "totalUploads": 1500,
+    "totalSize": 1073741824,
+    "failedUploads": 12,
+    "blockedUploads": 8,
+    "activeUsers": 25,
+    "averageSize": 715827.88
+  }
+}
+```
+
+### API Configuration
+
+Add the following configuration to your `fsb.env` file:
+
+```bash
+# Enable Upload API
+ENABLE_UPLOAD_API=true
+
+# Authentication Token
+UPLOAD_AUTH_TOKEN=your-secret-upload-token-here
+
+# File Limitations
+MAX_FILE_SIZE=2147483648                    # 2GB
+USER_QUOTA=10737418240                      # 10GB per user
+
+# Allowed File Types
+ALLOWED_MIME_TYPES=image/jpeg,image/png,video/mp4,application/pdf,text/plain
+ALLOWED_EXTENSIONS=.jpg,.jpeg,.png,.mp4,.pdf,.txt
+
+# Rate Limiting
+UPLOADS_PER_MINUTE=5
+UPLOADS_PER_HOUR=50
+CONCURRENT_UPLOADS_PER_USER=3
+API_COOLDOWN_SECONDS=1
+
+# Security Settings
+ENABLE_PROTECTION_MODE=true
+ENABLE_DEEP_SCAN=false
+```
+
+### API Usage Examples
+
+#### cURL Examples
+
+**Single File Upload:**
+
+```bash
+curl -X POST http://your-domain.com/upload \
+  -H "Authorization: Bearer your-secret-upload-token-here" \
+  -F "file=@/path/to/your/file.pdf"
+```
+
+**Batch Upload:**
+
+```bash
+curl -X POST http://your-domain.com/upload/batch \
+  -H "Authorization: Bearer your-secret-upload-token-here" \
+  -F "files=@/path/to/file1.jpg" \
+  -F "files=@/path/to/file2.mp4" \
+  -F "files=@/path/to/file3.txt"
+```
+
+**Query Status:**
+
+```bash
+curl -X GET http://your-domain.com/upload/status \
+  -H "Authorization: Bearer your-secret-upload-token-here"
+```
+
+#### Python Example
+
+```python
+import requests
+
+BASE_URL = "http://your-domain.com"
+AUTH_TOKEN = "your-secret-upload-token-here"
+
+def upload_file(file_path):
+    """Upload a single file"""
+    url = f"{BASE_URL}/upload"
+    headers = {"Authorization": f"Bearer {AUTH_TOKEN}"}
+
+    with open(file_path, 'rb') as f:
+        files = {'file': f}
+        response = requests.post(url, files=files, headers=headers)
+
+    return response.json()
+
+# Upload a file
+result = upload_file("/path/to/document.pdf")
+print(result)
+```
+
+#### JavaScript Example
+
+```javascript
+async function uploadFile(file) {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const response = await fetch('http://your-domain.com/upload', {
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer your-secret-upload-token-here',
+    },
+    body: formData,
+  })
+
+  return await response.json()
+}
+
+// Usage
+const fileInput = document.getElementById('fileInput')
+const file = fileInput.files[0]
+const result = await uploadFile(file)
+console.log(result)
+```
+
+### API Security
+
+#### Authentication
+
+All upload requests must include a valid `Authorization: Bearer YOUR_TOKEN` header.
+
+#### File Validation
+
+- **Type Checking**: Validates MIME type and file extension
+- **Size Checking**: Limits single file to maximum 2GB (configurable)
+- **Content Validation**: Checks file header authenticity (optional deep scan)
+- **Quota Checking**: Limits total storage usage per user
+
+#### Rate Control
+
+- **Per-Minute Limit**: Default 5 files/minute/user
+- **Per-Hour Limit**: Default 50 files/hour/user
+- **Concurrent Limit**: Default 3 simultaneous uploads/user
+- **API Cooldown**: Default 1 second cooldown between uploads
+
+#### Error Codes
+
+| Code | Message                 | Description                        |
+| ---- | ----------------------- | ---------------------------------- |
+| 400  | Authentication failed   | No token or invalid token          |
+| 400  | File retrieval failed   | Multipart form parsing error       |
+| 400  | File type not allowed   | File type or extension forbidden   |
+| 400  | File size exceeds limit | File exceeds configured maximum    |
+| 403  | Storage quota exceeded  | User has exhausted quota           |
+| 429  | Please wait X seconds   | Rate limit exceeded                |
+| 500  | Upload failed           | Server error or Telegram API error |
+
+> [!TIP]
+> For more detailed API documentation, please refer to the [上传 API 使用说明.md](上传API使用说明.md) file in the repository.
 
 ## Contributing
 
@@ -275,7 +549,6 @@ Feel free to contribute to this project if you have any further ideas
 [![Telegram Group](https://img.shields.io/static/v1?label=Join&message=Telegram%20Group&color=blueviolet&style=for-the-badge&logo=telegram&logoColor=violet)](https://xn--r1a.click/AlteredVoid)
 
 You can contact either via my [Telegram Group](https://xn--r1a.click/AlteredVoid) or you can message me on [@EverythingSuckz](https://xn--r1a.click/EverythingSuckz)
-
 
 ## Credits
 
